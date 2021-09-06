@@ -16,6 +16,7 @@ signal hurt_player
 
 func _ready():
 	start_position = position
+	connect("hurt_player", self, "_on_hurt_player")
 
 func _physics_process(delta):
 	velocity.y += gravity * delta
@@ -39,3 +40,7 @@ func _physics_process(delta):
 			emit_signal("hurt_player")
 		
 	velocity = move_and_slide(velocity, Vector2(0, -1))
+
+funct _on_hurt_player():
+	# get Player node, hurt it
+	pass
