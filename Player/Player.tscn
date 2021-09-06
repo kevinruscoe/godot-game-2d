@@ -66,8 +66,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="UpRayCast2D" type="RayCast2D" parent="."]
-rotation = 3.14159
+[node name="RayCasts" type="Node2D" parent="."]
+
+[node name="UpRayCast2D" type="RayCast2D" parent="RayCasts"]
 enabled = true
-cast_to = Vector2( 0, 7 )
+cast_to = Vector2( 0, -7 )
+collide_with_areas = true
+
+[node name="LeftRayCast2D" type="RayCast2D" parent="RayCasts"]
+enabled = true
+cast_to = Vector2( -7, 0 )
+collide_with_areas = true
+
+[node name="RightRayCast2D" type="RayCast2D" parent="RayCasts"]
+enabled = true
+cast_to = Vector2( 7, 0 )
 collide_with_areas = true

@@ -606,6 +606,6 @@ tile_data = PoolIntArray( -262157, 1, 0, -262156, 1, 0, -262155, 1, 0, -262154, 
 position = Vector2( 150, 75 )
 z_index = 2
 
-[node name="Character" parent="Actors" instance=ExtResource( 2 )]
-position = Vector2( 71.4353, 59.9192 )
+[node name="Player" parent="Actors" instance=ExtResource( 2 )]
+position = Vector2( 71, 60 )
 z_index = 2
