@@ -16,7 +16,8 @@ signal hurt_player
 
 func _ready():
 	start_position = position
-	connect("hurt_player", self, "_on_hurt_player")
+
+	connect("hurt_player", get_node('/root/Node'), "_on_hurt_player")
 
 func _physics_process(delta):
 	velocity.y += gravity * delta
@@ -35,12 +36,7 @@ func _physics_process(delta):
 	for i in range(get_slide_count()):
 		var collision = get_slide_collision(i)
 		
-		if collision.collider is KinematicBody2D:
-			# TODO: work out if its actually the player
+		if collision.collider.name == "Player":
 			emit_signal("hurt_player")
 		
 	velocity = move_and_slide(velocity, Vector2(0, -1))
-
-funct _on_hurt_player():
-	# get Player node, hurt it
-	pass

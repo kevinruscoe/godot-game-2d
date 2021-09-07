@@ -105,5 +105,5 @@ func _physics_process(delta):
 		is_jumping = false
 
 
-func _on_hurt_player():
+func apply_damgage():
 	print("ow")
