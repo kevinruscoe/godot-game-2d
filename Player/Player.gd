@@ -15,6 +15,8 @@ var pressing_left = false
 var pressing_right = false
 var pressed_space = false
 
+var input_frozen = false
+
 onready var sprite = get_node("AnimatedSprite")
 onready var raycast_up = get_node("RayCasts/UpRayCast2D")
 onready var raycast_left = get_node("RayCasts/LeftRayCast2D")
@@ -82,16 +84,20 @@ func handle_tilemap_collision(collision):
 		if tile_name == "pickup":
 			collision.collider.set_cellv(tile_pos, collision.collider.tile_set.find_tile_by_name("pickup_used"))
 
-
-func _physics_process(delta):
-
+func handle_timer(delta):
 	timer += delta
 
 	time_label.text = str( int(timer) )
 
-	handle_input()
-	handle_movement()
-	handle_animations()
+func _physics_process(delta):
+
+	handle_timer(delta)
+	
+	if not input_frozen:
+		handle_input()
+		handle_movement()
+		handle_animations()
+		
 	handle_collisions()
 
 	# update gravity
@@ -106,4 +112,15 @@ func _physics_process(delta):
 
 
 func apply_damgage():
-	print("ow")
+	sprite.set_modulate(Color8(255, 0, 0, 45))
+	
+	input_frozen = true
+	
+	velocity.y = -300
+	velocity.x = -200
+	
+	yield(get_tree().create_timer(0.4), "timeout")
+	
+	input_frozen = false
+	
+	sprite.set_modulate(Color8(255, 255, 255, 255))

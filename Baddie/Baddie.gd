@@ -33,10 +33,16 @@ func _physics_process(delta):
 	if position.x < start_position.x - distance_allowed_to_move:
 		going_right = true
 
-	for i in range(get_slide_count()):
-		var collision = get_slide_collision(i)
-		
-		if collision.collider.name == "Player":
+	if raycast_left.get_collider():
+		if raycast_left.get_collider().name == "Player":
+			emit_signal("hurt_player")
+
+	if raycast_right.get_collider():
+		if raycast_right.get_collider().name == "Player":
+			emit_signal("hurt_player")
+			
+	if raycast_up.get_collider():
+		if raycast_up.get_collider().name == "Player":
 			emit_signal("hurt_player")
 		
 	velocity = move_and_slide(velocity, Vector2(0, -1))
