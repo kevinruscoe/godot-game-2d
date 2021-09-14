@@ -1,57 +1,64 @@
 extends KinematicBody2D
 
-var is_player = true
-
-var run_speed = 100
-var jump_speed = 400
-var gravity = 1200
+var timer = 0
+var health = 100
 
 var velocity = Vector2()
 
-var timer = 0
+var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
+var gravity_vector = ProjectSettings.get_setting("physics/2d/default_gravity_vector")
+
+var move_speed = 100
+var jump_force = 400
 
 var is_jumping = false
-var pressing_left = false
-var pressing_right = false
-var pressed_space = false
+var is_input_frozen = false
 
-var input_frozen = false
+var is_pressing_left = false
+var is_pressing_right = false
+var is_pressing_up = false
+var is_pressing_fire = false
 
 onready var sprite = get_node("AnimatedSprite")
 onready var raycast_up = get_node("RayCasts/UpRayCast2D")
 onready var raycast_left = get_node("RayCasts/LeftRayCast2D")
 onready var raycast_right = get_node("RayCasts/RightRayCast2D")
 onready var camera = get_node("Camera2D")
-onready var time_label = camera.get_node("Time");
+onready var ui_container = camera.get_node("MarginContainer")
+onready var time_label = ui_container.get_node("Time");
+onready var health_label = ui_container.get_node("Health");
+
+func _enter_tree():
+	add_to_group("player")
 
 func handle_movement():
 
 	velocity.x = 0
 
-	if pressed_space and is_on_floor():
-		velocity.y = -jump_speed
+	if is_pressing_up and is_on_floor():
+		velocity.y = -jump_force
 		is_jumping = true
 
-	if pressing_right:
+	if is_pressing_right:
 		sprite.set_scale(Vector2(-1, 1))
-		velocity.x += run_speed
+		velocity.x += move_speed
 
-	if pressing_left:
+	if is_pressing_left:
 		sprite.set_scale(Vector2(1, 1))
-		velocity.x -= run_speed
+		velocity.x -= move_speed
 
 
 func handle_animations():
 
-	if pressing_right:
+	if is_pressing_right:
 		sprite.set_scale(Vector2(-1, 1))
-	if pressing_left:
+	if is_pressing_left:
 		sprite.set_scale(Vector2(1, 1))
 
 	if ! is_on_floor():
 		sprite.play("Jumping")
 	else:	
-		if pressing_left || pressing_right:
+		if is_pressing_left || is_pressing_right:
 			sprite.play("Walking")
 		else:
 			sprite.play("Idle")
@@ -59,9 +66,10 @@ func handle_animations():
 
 func handle_input():
 
-	pressing_right = Input.is_action_pressed('ui_right')
-	pressing_left = Input.is_action_pressed('ui_left')
-	pressed_space = Input.is_action_just_pressed('ui_select')
+	is_pressing_right = Input.is_action_pressed('ui_right')
+	is_pressing_left = Input.is_action_pressed('ui_left')
+	is_pressing_up = Input.is_action_just_pressed('ui_up')
+	is_pressing_fire = Input.is_action_just_pressed('ui_select')
 
 
 func handle_collisions():
@@ -89,14 +97,24 @@ func handle_timer(delta):
 
 	time_label.text = str( int(timer) )
 
+func handle_fire():
+	if is_pressing_fire:
+		var bullet = load("res://Bullet.tscn").instance()
+		bullet.position = position
+
+		add_child(bullet)
+
 func _physics_process(delta):
+
+	print(position)
 
 	handle_timer(delta)
 	
-	if not input_frozen:
+	if not is_input_frozen:
 		handle_input()
 		handle_movement()
 		handle_animations()
+		handle_fire()
 		
 	handle_collisions()
 
@@ -104,23 +122,31 @@ func _physics_process(delta):
 	velocity.y += gravity * delta
 
 	# move
-	velocity = move_and_slide(velocity, Vector2(0, -1))
+	velocity = move_and_slide(velocity, gravity_vector)
 
 	# toggle jump
 	if is_on_floor() && is_jumping:
 		is_jumping = false
 
 
-func apply_damgage():
+func apply_damgage(damage):
+
+	health -= damage
+
+	health_label.text = str( int(health) )
+
+	if (health <= 0):
+		print("ded")
+
 	sprite.set_modulate(Color8(255, 0, 0, 45))
-	
-	input_frozen = true
+		
+	is_input_frozen = true
 	
 	velocity.y = -300
 	velocity.x = -200
 	
 	yield(get_tree().create_timer(0.4), "timeout")
 	
-	input_frozen = false
+	is_input_frozen = false
 	
 	sprite.set_modulate(Color8(255, 255, 255, 255))

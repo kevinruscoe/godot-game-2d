@@ -1,10 +1,11 @@
-[gd_scene load_steps=24 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://Tilemap/tiles_packed.png" type="Texture" id=1]
 [ext_resource path="res://Player/Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Tilemap/tilemap_packed.png" type="Texture" id=3]
 [ext_resource path="res://Baddie/Baddie.tscn" type="PackedScene" id=4]
 [ext_resource path="res://EventBus.gd" type="Script" id=5]
+[ext_resource path="res://Bullet.tscn" type="PackedScene" id=6]
 
 [sub_resource type="ConvexPolygonShape2D" id=1]
 points = PoolVector2Array( 0, 0, 18, 0, 18, 18, 0, 18 )
@@ -605,9 +606,9 @@ tile_data = PoolIntArray( -262157, 1, 0, -262156, 1, 0, -262155, 1, 0, -262154, 
 [node name="Actors" type="Node" parent="."]
 
 [node name="Baddie" parent="Actors" instance=ExtResource( 4 )]
-position = Vector2( 150, 75 )
 z_index = 2
 
 [node name="Player" parent="Actors" instance=ExtResource( 2 )]
-position = Vector2( 71, 60 )
 z_index = 2
+
+[node name="Bullet" parent="." instance=ExtResource( 6 )]
